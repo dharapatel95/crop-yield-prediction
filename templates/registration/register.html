@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Crop Yield AI</title>
+
+    <style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:'Segoe UI',sans-serif;
+    }
+
+    body{
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:linear-gradient(135deg,#dff3e7,#c9e7d3,#b7dcc7);
+        padding:20px;
+    }
+
+    .register-wrapper{
+        width:950px;
+        min-height:580px;
+        display:flex;
+        border-radius:28px;
+        overflow:hidden;
+        background:rgba(255,255,255,0.45);
+        backdrop-filter:blur(18px);
+        box-shadow:0 20px 50px rgba(0,0,0,0.08);
+    }
+
+    /* left panel */
+    .left-panel{
+        flex:1;
+        background:linear-gradient(135deg,#2d6a4f,#40916c,#74c69d);
+        color:white;
+        padding:60px 50px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+    }
+
+    .left-panel h1{
+        font-size:42px;
+        font-weight:800;
+        margin-bottom:18px;
+    }
+
+    .left-panel p{
+        font-size:17px;
+        line-height:1.7;
+        opacity:0.95;
+        font-weight:500;
+    }
+
+    .ai-card{
+        margin-top:20px;
+        background:rgba(255,255,255,0.15);
+        padding:18px;
+        border-radius:18px;
+        backdrop-filter:blur(12px);
+        font-weight:700;
+        box-shadow:0 8px 18px rgba(0,0,0,0.08);
+    }
+
+    /* right panel */
+    .right-panel{
+        width:430px;
+        background:white;
+        padding:55px 40px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+    }
+
+    .right-panel h2{
+        font-size:34px;
+        font-weight:800;
+        color:#1d4d35;
+        margin-bottom:10px;
+    }
+
+    .subtitle{
+        color:#6b7280;
+        font-size:14px;
+        margin-bottom:28px;
+        font-weight:600;
+    }
+
+    input{
+        width:100%;
+        padding:15px 16px;
+        margin:12px 0;
+        border:none;
+        border-radius:14px;
+        background:#f3f6f4;
+        font-size:15px;
+        font-weight:700;
+        outline:none;
+        border:1px solid #e5e7eb;
+    }
+
+    input:focus{
+        border:1px solid #40916c;
+        box-shadow:0 0 0 3px rgba(64,145,108,0.12);
+    }
+
+    button{
+        width:100%;
+        padding:15px;
+        margin-top:18px;
+        border:none;
+        border-radius:14px;
+        background:linear-gradient(135deg,#2d6a4f,#40916c);
+        color:white;
+        font-size:16px;
+        font-weight:800;
+        cursor:pointer;
+        transition:0.3s;
+    }
+
+    button:hover{
+        transform:translateY(-2px);
+    }
+
+    .login-text{
+        margin-top:22px;
+        text-align:center;
+        font-weight:600;
+        color:#4b5563;
+    }
+
+    .login-text a{
+        color:#2d6a4f;
+        text-decoration:none;
+        font-weight:800;
+    }
+
+    @media(max-width:900px){
+        .register-wrapper{
+            flex-direction:column;
+            width:100%;
+        }
+
+        .right-panel{
+            width:100%;
+        }
+    }
+    </style>
+</head>
+<body>
+
+<div class="register-wrapper">
+
+    <div class="left-panel">
+        <h1>🌾 Join Crop Yield AI</h1>
+        <p>
+            Create your farmer dashboard account and access
+            smart crop yield prediction, weather insights,
+            and harvest planning.
+        </p>
+
+        <div class="ai-card">🤖 AI Yield Prediction</div>
+        <div class="ai-card">🌦 Weather Intelligence</div>
+        <div class="ai-card">📈 Prediction History</div>
+    </div>
+
+    <div class="right-panel">
+    <h2>Create Account</h2>
+    <p class="subtitle">Register to continue</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <input type="text" name="username" placeholder="Enter username" required>
+
+        <input type="password" name="password" placeholder="Enter password" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p class="login-text">
+        Already have account?
+        <a href="/login/">Login</a>
+    </p>
+</div>
+
+</div>
+
+</body>
+</html>

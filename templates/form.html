@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crop Yield Prediction</title>
+</head>
+<body>
+
+<h2>Enter Crop Details</h2>
+
+<form method="POST">
+  {% csrf_token %}
+
+  <input name="crop">
+<input name="season">
+<input name="state">
+<input name="area">
+<input name="production">
+<input name="fertilizer">
+<input name="pesticide">
+<input name="avg_temp">
+<input name="rainfall">
+<input name="humidity">
+<input name="n">
+<input name="p">
+<input name="k">
+<input name="ph">
+
+  <button type="submit">Predict</button>
+</form>
+
+</body>
+</html>

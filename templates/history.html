@@ -1,0 +1,26 @@
+<div class="card history-card">
+    <div class="history-top">
+        <h2>📊 Prediction History</h2>
+        <span class="history-badge">{{ data|length }} Records</span>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="history-table">
+            <tr>
+                <th>Crop</th>
+                <th>State</th>
+                <th>Season</th>
+                <th>Result</th>
+            </tr>
+
+            {% for i in data %}
+            <tr>
+                <td>{{ i.crop }}</td>
+                <td>{{ i.state }}</td>
+                <td>{{ i.season }}</td>
+                <td>🌾 {{ i.result }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>

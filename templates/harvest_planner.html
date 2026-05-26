@@ -1,0 +1,26 @@
+<div class="card planner-card">
+    <div class="planner-header">
+        <h2>📅 Harvest Planner</h2>
+        <span class="planner-badge">Smart AI Plan</span>
+    </div>
+
+    <p class="planner-subtitle">
+        Select sowing date to generate intelligent harvest schedule
+    </p>
+
+    <div class="planner-input-box">
+        <label>🌱 Sowing Date</label>
+        <input type="date" id="harvestDate">
+    </div>
+
+    <div class="planner-btn-row">
+        <button class="planner-btn" onclick="planHarvest()">🚀 Generate Plan</button>
+        <button class="back-btn" onclick="loadHome()">⬅ Back</button>
+    </div>
+
+    <div id="harvestResult" class="planner-result"></div>
+
+    <div class="chart-box">
+        <canvas id="harvestChart" height="100"></canvas>
+    </div>
+</div>

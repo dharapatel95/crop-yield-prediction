@@ -1,0 +1,190 @@
+<div class="card admin-card">
+    <h2>📊 Admin Dashboard</h2>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <h3>👤 Total Users</h3>
+            <p>{{ total_users }}</p>
+        </div>
+
+        <div class="stat-box">
+            <h3>🌾 Total Predictions</h3>
+            <p>{{ total_predictions }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="card admin-card">
+    <h3>🌱 Top Crops</h3>
+    <div class="crop-list">
+        {% for c in top_crops %}
+            <div class="crop-item">
+                <span>{{ c.crop }}</span>
+                <span class="badge">{{ c.count }}</span>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card admin-card">
+    <h3>🕒 Recent Predictions</h3>
+
+    <div class="table-wrapper">
+        <table class="admin-table">
+            <tr>
+                <th>User</th>
+                <th>Crop</th>
+                <th>Result</th>
+            </tr>
+
+            {% for r in recent %}
+            <tr>
+                <td>{{ r.user.username }}</td>
+                <td>{{ r.crop }}</td>
+                <td>{{ r.result }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<style>
+/* ===== ADMIN DASHBOARD THEME ===== */
+.admin-card{
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.28),
+        rgba(210,235,220,0.22)
+    );
+    backdrop-filter: blur(22px);
+    border: 1px solid rgba(255,255,255,0.32);
+    border-radius: 28px;
+    padding: 30px;
+    margin-bottom: 24px;
+    box-shadow:
+        0 12px 30px rgba(31,77,58,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.22);
+}
+
+/* ===== HEADING ===== */
+.admin-card h2,
+.admin-card h3{
+    font-size: 30px;
+    font-weight: 800;
+    color: #214536;
+    margin-bottom: 20px;
+}
+
+/* ===== STAT GRID ===== */
+.stats-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+    gap: 20px;
+}
+
+/* ===== STAT BOX ===== */
+.stat-box{
+    background: linear-gradient(
+        135deg,
+        rgba(92,156,124,0.22),
+        rgba(255,255,255,0.18)
+    );
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 22px;
+    padding: 24px;
+    transition: 0.3s ease;
+    box-shadow: 0 8px 18px rgba(31,77,58,0.06);
+}
+
+.stat-box:hover{
+    transform: translateY(-6px);
+    box-shadow: 0 14px 26px rgba(31,77,58,0.10);
+}
+
+.stat-box h3{
+    font-size: 18px;
+    font-weight: 700;
+    color: #285943;
+    margin-bottom: 10px;
+}
+
+.stat-box p{
+    font-size: 38px;
+    font-weight: 900;
+    color: #1f4d3a;
+    margin: 0;
+}
+
+/* ===== CROP LIST ===== */
+.crop-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    margin: 12px 0;
+    border-radius: 18px;
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.20),
+        rgba(92,156,124,0.12)
+    );
+    font-weight: 700;
+    color: #214536;
+    transition: 0.3s ease;
+}
+
+.crop-item:hover{
+    transform: translateX(5px);
+    background: rgba(255,255,255,0.28);
+}
+
+/* ===== BADGE ===== */
+.badge{
+    background: linear-gradient(135deg,#2f6f56,#6ea89b);
+    color: white;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-weight: 800;
+    box-shadow: 0 6px 14px rgba(47,111,86,0.18);
+}
+
+/* ===== TABLE ===== */
+.table-wrapper{
+    overflow-x: auto;
+    margin-top: 16px;
+    border-radius: 18px;
+}
+
+.admin-table{
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+.admin-table th{
+    background: rgba(92,156,124,0.18);
+    color: #214536;
+    padding: 16px;
+    font-weight: 800;
+    font-size: 15px;
+}
+
+.admin-table td{
+    padding: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #214536;
+    border-bottom: 1px solid rgba(255,255,255,0.16);
+}
+
+.admin-table tr{
+    background: rgba(255,255,255,0.14);
+    transition: 0.3s ease;
+}
+
+.admin-table tr:hover{
+    background: rgba(92,156,124,0.10);
+}
+</style>

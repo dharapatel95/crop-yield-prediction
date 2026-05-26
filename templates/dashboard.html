@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crop Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+*{
+    box-sizing:border-box;
+    font-family:'Inter','Segoe UI',sans-serif;
+    margin:0;
+    padding:0;
+}
+
+/* ===== Body ===== */
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#dfeee5 0%, #c7e0d1 45%, #b8d4c2 100%);
+    color:#1f2937;
+    position:relative;
+    overflow-x:hidden;
+    font-size:16px;
+    font-weight:700;
+}
+
+/* soft blobs */
+body::before,
+body::after{
+    content:"";
+    position:fixed;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    filter:blur(70px);
+    z-index:-1;
+    opacity:0.5;
+}
+
+body::before{
+    background:#95c9aa;
+    top:40px;
+    right:80px;
+}
+
+body::after{
+    background:#76b49b;
+    bottom:50px;
+    left:60px;
+}
+
+/* ===== Layout ===== */
+.container{
+    display:flex;
+    min-height:100vh;
+    gap:24px;
+    padding:24px;
+}
+
+/* ===== Sidebar ===== */
+.sidebar{
+    width:280px;
+    background:linear-gradient(180deg,#9fcbb0 0%, #86b89c 100%);
+    border-radius:30px;
+    padding:28px 22px;
+    box-shadow:0 12px 24px rgba(0,0,0,0.06);
+}
+
+/* ===== Sidebar Title ===== */
+.sidebar h2{
+    font-size:34px;
+    font-weight:900;
+    margin-bottom:34px;
+    color:#1f3f33;
+    letter-spacing:0.3px;
+}
+
+/* ===== Sidebar Buttons ===== */
+.menu button{
+    width:100%;
+    padding:16px 18px;
+    margin-bottom:14px;
+    border:none;
+    border-radius:18px;
+    background:rgba(255,255,255,0.65);
+    color:#1f3f33;
+    text-align:left;
+    font-size:16px;
+    font-weight:800;
+    box-shadow:0 6px 14px rgba(0,0,0,0.04);
+    transition:all 0.25s ease;
+    cursor:pointer;
+}
+
+.menu button:hover{
+    transform:translateX(5px);
+    background:white;
+}
+
+/* ===== Main ===== */
+.main{
+    flex:1;
+    background:rgba(255,255,255,0.28);
+    backdrop-filter:blur(18px);
+    border-radius:30px;
+    padding:34px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.04);
+}
+
+/* ===== Welcome ===== */
+.main p{
+    font-size:22px;
+    font-weight:800 !important;
+    color:#214536 !important;
+    margin-bottom:20px;
+}
+
+/* ===== Card ===== */
+.card{
+    background:rgba(255,255,255,0.42);
+    backdrop-filter:blur(16px);
+    border-radius:26px;
+    padding:30px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.04);
+}
+
+.card h2{
+    font-size:30px;
+    font-weight:900;
+    color:#214536;
+    margin-bottom:40px;
+}
+
+/* ===== Form ===== */
+#predictForm{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+/* ===== Inputs ===== */
+input,
+select,
+.select2-container--default .select2-selection--single{
+    width:100%;
+    height:56px !important;
+    border:none !important;
+    border-radius:18px !important;
+    padding:0 16px !important;
+    background:rgba(255,255,255,0.85) !important;
+    color:#1f2937 !important;
+    font-size:15px !important;
+    font-weight:800 !important;
+    box-shadow:0 4px 10px rgba(0,0,0,0.03);
+}
+
+/* placeholders */
+input::placeholder{
+    font-weight:700;
+    color:#475569;
+}
+
+/* focus */
+input:focus,
+select:focus{
+    outline:none;
+    box-shadow:0 0 0 3px rgba(92,156,124,0.18);
+}
+
+/* ===== Select2 ===== 
+.select2-container{
+    width:100% !important;
+}
+
+.select2-container--default .select2-selection--single{
+    width:100% !important;
+    height:56px !important;
+    border:none !important;
+    border-radius:18px !important;
+    padding:0 50px 0 16px !important;
+    background:rgba(255,255,255,0.85) !important;
+    box-shadow:0 4px 10px rgba(0,0,0,0.03);
+    position:relative;
+}
+
+/* selected text */
+.select2-selection__rendered{
+    line-height:56px !important;
+    font-weight:800 !important;
+    color:#1f2937 !important;
+    padding-left:0 !important;
+}
+
+/* clear button */
+.select2-container--default .select2-selection__clear{
+    position:absolute !important;
+    right:28px !important;
+    top:50% !important;
+    transform:translateY(-50%);
+    font-size:18px !important;
+    color:#1f4d3a !important;
+    cursor:pointer;
+    z-index:2;
+}
+
+/* dropdown arrow */
+.select2-container--default .select2-selection__arrow{
+    position:absolute !important;
+    right:10px !important;
+    top:50% !important;
+    transform:translateY(-50%);
+    height:auto !important;
+}
+
+/* dropdown box */
+.select2-dropdown{
+    border:none !important;
+    border-radius:18px !important;
+    overflow:hidden;
+    box-shadow:0 10px 22px rgba(0,0,0,0.08);
+    background:white !important;
+}
+
+/* search area */
+.select2-search--dropdown{
+    padding:12px !important;
+    background:white !important;
+}
+
+/* IMPORTANT FIX */
+.select2-container .select2-search__field{
+    width:100% !important;
+    height:42px !important;
+    border:none !important;
+    outline:none !important;
+    border-radius:12px !important;
+    padding:10px 14px !important;
+    font-size:14px !important;
+    font-weight:600 !important;
+    color:#1f2937 !important;
+    background:#f8fafc !important;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* placeholder */
+.select2-search__field::placeholder{
+    color:#94a3b8 !important;
+}
+
+/* options */
+.select2-results__option{
+    padding:12px 16px !important;
+    font-size:15px !important;
+    font-weight:700 !important;
+}
+
+/* hover */
+.select2-results__option--highlighted{
+    background:#86b89c !important;
+    color:white !important;
+}/*
+/* ===== Buttons ===== */
+.submit{
+    border:none;
+    border-radius:18px;
+    padding:14px 24px;
+    background:linear-gradient(135deg,#245b45,#4f8a6f);
+    color:white;
+    font-size:15px;
+    font-weight:900;
+    box-shadow:0 10px 20px rgba(36,91,69,0.14);
+    cursor:pointer;
+    transition:all 0.25s ease;
+}
+
+.submit:hover{
+    transform:translateY(-2px);
+}
+
+button[type="button"]{
+    border:none;
+    border-radius:18px;
+    padding:14px 20px;
+    background:linear-gradient(135deg,#d6eadc,#b8d8c2);
+    color:#214536;
+    font-size:15px;
+    font-weight:800;
+    box-shadow:0 6px 14px rgba(0,0,0,0.04);
+    cursor:pointer;
+}
+
+/* ===== Result ===== */
+#resultBox,
+#graphSection{
+    margin-top:24px;
+    background:rgba(255,255,255,0.45);
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 8px 18px rgba(0,0,0,0.03);
+}
+
+/* ===== Mobile ===== */
+@media(max-width:768px){
+    .container{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+    }
+
+    #predictForm{
+        grid-template-columns:1fr;
+    }
+}
+
+/* ===== History Table Premium ===== */
+.history-card{
+    margin-top:20px;
+    padding:28px;
+}
+
+.history-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.history-top h2{
+    margin:0;
+    font-size:28px;
+    font-weight:800;
+    color:#1f4d3a;
+}
+
+.history-badge{
+    padding:10px 16px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.65);
+    font-size:14px;
+    font-weight:700;
+    color:#475569;
+}
+
+.table-wrapper{
+    overflow-x:auto;
+    border-radius:20px;
+}
+
+.history-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 12px;
+}
+
+.history-table th{
+    text-align:left;
+    padding:14px 16px;
+    font-size:14px;
+    font-weight:800;
+    color:#1f4d3a;
+}
+
+.history-table td{
+    padding:18px 16px;
+    font-size:14px;
+    font-weight:600;
+    color:#334155;
+    background:rgba(255,255,255,0.75);
+}
+
+.history-table tr td:first-child{
+    border-top-left-radius:16px;
+    border-bottom-left-radius:16px;
+}
+
+.history-table tr td:last-child{
+    border-top-right-radius:16px;
+    border-bottom-right-radius:16px;
+}
+
+.history-table tr{
+    transition:all 0.3s ease;
+}
+
+.history-table tbody tr:hover,
+.history-table tr:hover{
+    transform:translateY(-2px);
+}
+
+@media(max-width:768px){
+    .history-top{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:12px;
+    }
+}
+
+
+/* ===== Help Page ===== */
+.help-card{
+    padding:30px;
+}
+
+.help-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:24px;
+}
+
+.help-header h2{
+    margin:0;
+    font-size:30px;
+    font-weight:800;
+    color:#1f4d3a;
+}
+
+.help-badge{
+    padding:10px 16px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.7);
+    font-size:14px;
+    font-weight:700;
+    color:#475569;
+}
+
+.help-section,
+.help-note{
+    margin-bottom:20px;
+    padding:20px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.55);
+    box-shadow:0 6px 16px rgba(0,0,0,0.03);
+}
+
+.help-section h3,
+.help-note h3{
+    margin-top:0;
+    font-size:20px;
+    font-weight:800;
+    color:#1f4d3a;
+}
+
+.help-section ul{
+    margin:0;
+    padding-left:22px;
+}
+
+.help-section li{
+    margin-bottom:10px;
+    font-size:15px;
+    font-weight:600;
+    color:#334155;
+    line-height:1.6;
+}
+
+.help-note p{
+    margin:0;
+    font-size:15px;
+    font-weight:600;
+    color:#475569;
+    line-height:1.7;
+}
+
+.back-btn{
+    border:none;
+    border-radius:16px;
+    padding:14px 20px;
+    font-size:15px;
+    font-weight:700;
+    background:linear-gradient(135deg,#d8f3dc,#b7e4c7);
+    color:#1f4d3a;
+    cursor:pointer;
+    transition:all 0.3s ease;
+}
+
+.back-btn:hover{
+    transform:translateY(-2px);
+}
+
+
+/* ===== Harvest Planner ===== */
+.planner-card{
+    padding:30px;
+}
+
+.planner-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+}
+
+.planner-header h2{
+    margin:0;
+    font-size:30px;
+    font-weight:800;
+    color:#1f4d3a;
+}
+
+.planner-badge{
+    padding:10px 16px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.7);
+    font-size:14px;
+    font-weight:700;
+    color:#475569;
+}
+
+.planner-subtitle{
+    font-size:15px;
+    font-weight:600;
+    color:#64748b;
+    margin-bottom:22px;
+}
+
+.planner-input-box{
+    background:rgba(255,255,255,0.55);
+    padding:20px;
+    border-radius:20px;
+    margin-bottom:20px;
+}
+
+.planner-input-box label{
+    display:block;
+    margin-bottom:10px;
+    font-size:15px;
+    font-weight:700;
+    color:#1f4d3a;
+}
+
+.planner-input-box input{
+    width:100%;
+    height:56px;
+    border:none;
+    border-radius:16px;
+    padding:0 16px;
+    font-size:15px;
+    font-weight:600;
+    background:rgba(255,255,255,0.85);
+}
+
+.planner-btn-row{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+}
+
+.planner-btn{
+    border:none;
+    border-radius:16px;
+    padding:14px 22px;
+    font-size:15px;
+    font-weight:700;
+    background:linear-gradient(135deg,#1f4d3a,#3c8c63);
+    color:white;
+    cursor:pointer;
+    transition:all 0.3s ease;
+}
+
+.planner-btn:hover{
+    transform:translateY(-2px);
+}
+
+.planner-result{
+    margin-top:18px;
+    padding:22px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.55);
+    box-shadow:0 6px 16px rgba(0,0,0,0.03);
+    font-size:15px;
+    font-weight:600;
+    line-height:1.8;
+    color:#334155;
+}
+
+.chart-box{
+    margin-top:24px;
+    padding:22px;
+    border-radius:22px;
+    background:rgba(255,255,255,0.45);
+    box-shadow:0 6px 16px rgba(0,0,0,0.03);
+}
+
+@media(max-width:768px){
+    .planner-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:12px;
+    }
+
+    .planner-btn-row{
+        flex-direction:column;
+    }
+
+    /* ===== FINAL SELECT2 SEARCH FIX ===== */
+.select2-dropdown .select2-search {
+    padding: 8px !important;
+    margin: 0 !important;
+    background: white !important;
+}
+
+.select2-dropdown .select2-search__field {
+    all: unset;
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    height: 42px !important;
+    padding: 10px 14px !important;
+    border-radius: 12px !important;
+    background: #f8fafc !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+
+/* remove extra white gap */
+.select2-results {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+}
+
+
+
+
+
+
+
+
+.welcome-banner{
+    margin-bottom:30px;
+}
+
+.welcome-text{
+    margin-bottom:22px;
+}
+
+.welcome-text h2{
+    font-size:34px;
+    font-weight:800;
+    color:#214536;
+    margin-bottom:8px;
+}
+
+.welcome-text p{
+    font-size:16px;
+    font-weight:600;
+    color:#5b6b63;
+}
+
+.stats-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.stat-card{
+    background:rgba(255,255,255,0.35);
+    backdrop-filter:blur(16px);
+    border-radius:22px;
+    padding:24px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.05);
+    border:1px solid rgba(255,255,255,0.3);
+    transition:0.3s;
+}
+
+.stat-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 28px rgba(0,0,0,0.08);
+}
+
+.stat-card h3{
+    font-size:18px;
+    font-weight:800;
+    margin-bottom:10px;
+    color:#214536;
+}
+
+.stat-card p{
+    font-size:22px;
+    font-weight:800;
+    color:#2d6a4f;
+}
+
+/* ===== FINAL SELECT2 DROPDOWN FIX ===== */
+.select2-container--open .select2-dropdown {
+    margin-top: 6px !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+    background: white !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.08) !important;
+}
+
+.select2-search--dropdown {
+    padding: 8px !important;
+    background: white !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+    width: 100% !important;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    background: #f8fafc !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+
+.select2-results {
+    max-height: 220px !important;
+    overflow-y: auto !important;
+}
+
+.select2-results__options {
+    max-height: 220px !important;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="sidebar">
+        <h2>🌾 Crop AI</h2>
+
+        <div class="menu">
+            <button onclick="loadHome()">📊Dashboard</button>
+            <button onclick="loadHistory()">📜History</button>
+            <button onclick="loadHarvestPlanner()">🌱Harvest Planner</button>
+            <button onclick="loadHelp()">❓Help</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="main" id="mainContent">
+    
+    
+<div class="welcome-banner">
+    <div class="welcome-text">
+        <h2>🌾 Welcome {{ request.user.username }}</h2>
+        <p>Smart crop yield prediction powered by AI</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <h3>📈 Predictions</h3>
+            <p>{{ data_count|default:"12" }}</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>🌦 Weather</h3>
+            <p>Live Insights</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>📅 Harvest</h3>
+            <p>Planner Ready</p>
+        </div>
+    </div>
+</div>
+
+
+        <div id="dashboard" class="card">
+            <h2>Enter Crop Details</h2>
+
+            <form id="predictForm">
+                {% csrf_token %}
+
+                <select name="crop" required class="searchable">
+    <option value="">Select Crop</option>
+
+    <option value="Arecanut">Arecanut</option>
+    <option value="Arhar/Tur">Arhar/Tur</option>
+    <option value="Castor seed">Castor seed</option>
+    <option value="Coconut">Coconut</option>
+    <option value="Cotton(lint)">Cotton (lint)</option>
+    <option value="Dry chillies">Dry chillies</option>
+    <option value="Gram">Gram</option>
+    <option value="Jute">Jute</option>
+    <option value="Linseed">Linseed</option>
+    <option value="Maize">Maize</option>
+    <option value="Mesta">Mesta</option>
+    <option value="Niger seed">Niger seed</option>
+    <option value="Onion">Onion</option>
+    <option value="Other Rabi pulses">Other Rabi pulses</option>
+    <option value="Potato">Potato</option>
+    <option value="Rapeseed &Mustard">Rapeseed & Mustard</option>
+    <option value="Rice">Rice</option>
+    <option value="Sesamum">Sesamum</option>
+    <option value="Small millets">Small millets</option>
+    <option value="Sugarcane">Sugarcane</option>
+    <option value="Sweet potato">Sweet potato</option>
+    <option value="Tapioca">Tapioca</option>
+    <option value="Tobacco">Tobacco</option>
+    <option value="Turmeric">Turmeric</option>
+    <option value="Wheat">Wheat</option>
+    <option value="Bajra">Bajra</option>
+    <option value="Black pepper">Black pepper</option>
+    <option value="Cardamom">Cardamom</option>
+    <option value="Coriander">Coriander</option>
+    <option value="Garlic">Garlic</option>
+    <option value="Ginger">Ginger</option>
+    <option value="Groundnut">Groundnut</option>
+    <option value="Horse-gram">Horse-gram</option>
+    <option value="Jowar">Jowar</option>
+    <option value="Ragi">Ragi</option>
+    <option value="Cashewnut">Cashewnut</option>
+    <option value="Banana">Banana</option>
+    <option value="Soyabean">Soyabean</option>
+    <option value="Barley">Barley</option>
+    <option value="Khesari">Khesari</option>
+    <option value="Masoor">Masoor</option>
+    <option value="Moong(Green Gram)">Moong (Green Gram)</option>
+    <option value="Other Kharif pulses">Other Kharif pulses</option>
+    <option value="Safflower">Safflower</option>
+    <option value="Sannhamp">Sannhamp</option>
+    <option value="Sunflower">Sunflower</option>
+    <option value="Urad">Urad</option>
+    <option value="Peas & beans (Pulses)">Peas & beans (Pulses)</option>
+    <option value="other oilseeds">Other oilseeds</option>
+    <option value="Other Cereals">Other Cereals</option>
+    <option value="Cowpea(Lobia)">Cowpea (Lobia)</option>
+    <option value="Oilseeds total">Oilseeds total</option>
+    <option value="Guar seed">Guar seed</option>
+    <option value="Other Summer Pulses">Other Summer Pulses</option>
+    <option value="Moth">Moth</option>
+
+</select>
+
+                <select name="season" class="searchable" required>
+                    <option value="">Select Season</option>
+                    <option>Whole Year</option>
+                    <option>Kharif</option>
+                    <option>Rabi</option>
+                    <option>Autumn</option>
+                    <option>Summer</option>
+                    <option>Winter</option>
+                </select>
+
+                <select name="state" required class="searchable">
+    <option value="">Select State</option>
+
+    <option value="Assam">Assam</option>
+    <option value="Karnataka">Karnataka</option>
+    <option value="Kerala">Kerala</option>
+    <option value="Meghalaya">Meghalaya</option>
+    <option value="West Bengal">West Bengal</option>
+    <option value="Puducherry">Puducherry</option>
+    <option value="Goa">Goa</option>
+    <option value="Andhra Pradesh">Andhra Pradesh</option>
+    <option value="Tamil Nadu">Tamil Nadu</option>
+    <option value="Odisha">Odisha</option>
+    <option value="Bihar">Bihar</option>
+    <option value="Gujarat">Gujarat</option>
+    <option value="Madhya Pradesh">Madhya Pradesh</option>
+    <option value="Maharashtra">Maharashtra</option>
+    <option value="Mizoram">Mizoram</option>
+    <option value="Punjab">Punjab</option>
+    <option value="Uttar Pradesh">Uttar Pradesh</option>
+    <option value="Haryana">Haryana</option>
+    <option value="Himachal Pradesh">Himachal Pradesh</option>
+    <option value="Tripura">Tripura</option>
+    <option value="Nagaland">Nagaland</option>
+    <option value="Chhattisgarh">Chhattisgarh</option>
+    <option value="Uttarakhand">Uttarakhand</option>
+    <option value="Jharkhand">Jharkhand</option>
+    <option value="Delhi">Delhi</option>
+    <option value="Manipur">Manipur</option>
+    <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+    <option value="Telangana">Telangana</option>
+    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+    <option value="Sikkim">Sikkim</option>
+
+</select>
+
+                <input name="area" placeholder="Area" required>
+                
+                <input name="fertilizer" placeholder="Fertilizer" required>
+                <input name="pesticide" placeholder="Pesticide" required>
+                <input name="avg_temp" placeholder="Temperature" id="temperature"required>
+                <input name="rainfall" id="rainfall" placeholder="Rainfall" required>
+                <input name="humidity" id="humidity" placeholder="Humidity" required>
+
+
+
+<button type="button" onclick="fillHybridWeather()">
+🌦 Fill Weather</button>
+<button class="submit">🚀 Predict</button>
+
+
+    
+
+            </form>
+
+            <div id="resultBox"></div>
+            
+<div id="graphSection" style="margin-top:50px;">
+    <canvas id="harvestChart" height="100"></canvas>
+</div>
+
+            </div>
+
+
+    
+</div>
+</div>
+
+<script>
+
+// ✅ SAFE FORM HANDLING (prevents crash after switching pages)
+const form = document.getElementById("predictForm");
+
+if(form){
+    form.addEventListener("submit", function(e){
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        fetch("", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.result){
+                let html = `
+                    <div style="padding:15px; background:rgba(0,255,0,0.1); border-radius:10px;">
+                        <h3>🌾 Predicted Yield</h3>
+                        <p style="font-size:22px; font-weight:bold;">
+${Number(data.result).toFixed(2)} tons/hectare                        </p>
+                       
+                    </div>
+                `;
+
+                // suggestions
+                if(data.suggestions){
+                    html += `<ul>`;
+                    data.suggestions.forEach(item => {
+                        html += `<li>${item}</li>`;
+                    });
+                    html += `</ul>`;
+                }
+
+                
+                window.lastYield = data.result;
+                document.getElementById("resultBox").innerHTML = html;
+            } else {
+    document.getElementById("resultBox").innerHTML =
+        `<span style='color:red'>❌ ${data.error} Something is want wrong.</span>`;
+}
+
+        });
+    });
+}
+
+// ✅ SAFE LOAD FUNCTIONS (no duplication issue now)
+function loadHistory(){
+    fetch("/history/")
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById("mainContent").innerHTML = data;
+    })
+    .catch(() => {
+        document.getElementById("mainContent").innerHTML =
+            "<p style='color:red'>Error loading history</p>";
+    });
+}
+
+function loadHelp(){
+    fetch("/help/")
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById("mainContent").innerHTML = data;
+    })
+    .catch(() => {
+        document.getElementById("mainContent").innerHTML =
+            "<p style='color:red'>Error loading help</p>";
+    });
+}
+
+function loadHome(){
+    location.reload();
+}
+
+function logout(){
+    window.location.href = "/logout/";
+}
+
+
+
+
+
+function fillHybridWeather() {
+    let state = document.querySelector("[name='state']").value;
+    let season = document.querySelector("[name='season']").value;
+
+    fetch(`/hybrid-weather/?state=${state}&season=${season}&year=2025`)
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("rainfall").value = data.rainfall;
+        document.getElementById("temperature").value = data.temperature;
+        document.getElementById("humidity").value = data.humidity;
+
+        });
+        if(!state || !season){
+        alert("Select state and season first");
+        return;
+        }
+
+    
+}
+
+/*$(document).ready(function() {
+    $('.searchable').select2({
+        placeholder: "Search here...",
+        allowClear: true
+    });
+});
+$(document).ready(function () {
+
+    $('.searchable').select2({
+        placeholder: "Search here...",
+        allowClear: true
+    });*/
+
+    $(document).ready(function () {
+    $('.searchable').select2({
+        placeholder: "Search here...",
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('body')
+    });
+
+    $("[name='crop']").on("change", function () {
+        const crop = $(this).val().trim();
+        const seasonSelect = $("[name='season']");
+
+        if (cropConfig[crop]) {
+            seasonSelect.val(cropConfig[crop].season).trigger("change");
+        }
+    });
+
+
+    // AUTO SEASON FILL
+    $("[name='crop']").on("change", function () {
+
+        const crop = $(this).val().trim();
+        const seasonSelect = $("[name='season']");
+
+        console.log("Selected crop:", crop);
+
+        if (cropConfig[crop]) {
+            const season = cropConfig[crop].season;
+
+            console.log("Auto season:", season);
+
+            seasonSelect.val(season).trigger("change");
+        } else {
+            console.log("Crop not found in config");
+        }
+    });
+
+});
+
+
+function loadHarvestPlanner(){
+    if(!window.lastYield){
+        alert("Please predict first");
+        return;
+    }
+
+    localStorage.setItem("predictedYield", window.lastYield);
+    localStorage.setItem("cropName", document.querySelector("[name='crop']").value);
+    localStorage.setItem("seasonName", document.querySelector("[name='season']").value);
+    localStorage.setItem("areaValue", document.querySelector("[name='area']").value);
+
+    fetch("/harvest-planner/")
+    .then(res => res.text())
+    .then(data => {
+    document.getElementById("mainContent").innerHTML = data;
+
+    setTimeout(() => {
+        setAllowedSowingMonths();
+    }, 100);
+})
+    .catch(() => {
+        document.getElementById("mainContent").innerHTML =
+            "<p style='color:red'>Error loading planner</p>";
+    });
+}
+
+let chartInstance;
+
+function planHarvest() {
+
+    let yieldPerHa = parseFloat(localStorage.getItem("predictedYield"));
+    let cropName = localStorage.getItem("cropName") || "";
+    let season = (localStorage.getItem("seasonName") || "").toLowerCase();
+    let area = parseFloat(localStorage.getItem("areaValue") || 1);
+
+    if (!yieldPerHa) {
+        alert("No prediction found. Please predict first.");
+        return;
+    }
+
+    let totalYield = yieldPerHa * area;
+
+    let inputDate = document.getElementById("harvestDate").value;
+
+    if (!inputDate) {
+        alert("Select sowing date first");
+        return;
+    }
+
+    let parts = inputDate.split("-");
+    let sowingDate = new Date(parts[0], parts[1] - 1, parts[2]);
+
+    // Get crop configuration
+    const config = cropConfig[cropName] || {
+        maturityDays: 90,
+        harvestSlots: 2
+    };
+
+    let maturityDays = config.maturityDays;
+    let harvestCount = config.harvestSlots;
+
+    let firstHarvestDate = new Date(sowingDate);
+    firstHarvestDate.setDate(
+        firstHarvestDate.getDate() + maturityDays
+    );
+
+    // interval between harvests
+    let intervalDays = 7;
+
+    if (harvestCount === 1) {
+        intervalDays = 0;
+    } else if (season === "whole year") {
+        intervalDays = 20;
+    } else {
+        intervalDays = 10;
+    }
+
+    // Yield distribution weights
+    let weights = [];
+
+if (harvestCount === 1) {
+    weights = [1];
+}
+else if (harvestCount === 2) {
+    weights = [0.45, 0.55];
+}
+else if (harvestCount === 3) {
+    weights = [0.25, 0.45, 0.30];
+}
+else if (harvestCount === 4) {
+    weights = [0.18, 0.32, 0.28, 0.22];
+}
+else {
+    let remaining = 1;
+    for (let i = 0; i < harvestCount; i++) {
+        let randomWeight =
+            0.15 + Math.random() * 0.15;
+
+        weights.push(randomWeight);
+        remaining -= randomWeight;
+    }
+
+    let sum = weights.reduce((a, b) => a + b, 0);
+    weights = weights.map(w => w / sum);
+}   
+
+    let html = `
+        <h4>📦 Harvest Plan</h4>
+        <p>🌱 Sowing Date: ${sowingDate.toDateString()}</p>
+        <p>⏳ Harvest After: ${maturityDays} days</p>
+    `;
+
+    let chartLabels = [];
+    let chartValues = [];
+
+    for (let i = 0; i < harvestCount; i++) {
+
+        let date = new Date(firstHarvestDate);
+        date.setDate(
+            date.getDate() + (i * intervalDays)
+        );
+
+        let yieldPart = +(
+            totalYield * weights[i]
+        ).toFixed(2);
+
+        html += `
+            <p>📅 ${date.toDateString()} → 🌾 ${yieldPart} tons</p>
+        `;
+
+        chartLabels.push(date.toDateString());
+        chartValues.push(yieldPart);
+    }
+
+    document.getElementById("harvestResult").innerHTML = html;
+
+    drawHarvestGraph(chartLabels, chartValues);
+}
+
+function drawHarvestGraph(labels, values) {
+    const ctx = document.getElementById('harvestChart').getContext('2d');
+
+    if(chartInstance){
+        chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Harvest Yield (tons)',
+                data: values,
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'gray'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: 'gray'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: 'gray'
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+const cropConfig = {
+    "Arecanut": { season: "Whole Year", sowMonths: [1,2,3,4,5,6,7,8,9,10,11,12], harvestSlots: 2, maturityDays: 365 },
+    "Arhar/Tur": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 180 },
+    "Castor seed": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 150 },
+    "Coconut": { season: "Whole Year", sowMonths: [1,2,3,4,5,6,7,8,9,10,11,12], harvestSlots: 4, maturityDays: 365 },
+    "Cotton(lint)": { season: "Kharif", sowMonths: [5,6,7], harvestSlots: 1, maturityDays: 180 },
+    "Dry chillies": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 150 },
+    "Gram": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 120 },
+    "Jute": { season: "Kharif", sowMonths: [3,4,5], harvestSlots: 1, maturityDays: 120 },
+    "Linseed": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 130 },
+    "Maize": { season: "Kharif", sowMonths: [6,7,8], harvestSlots: 1, maturityDays: 100 },
+    "Mesta": { season: "Kharif", sowMonths: [5,6], harvestSlots: 1, maturityDays: 120 },
+    "Niger seed": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 100 },
+    "Onion": { season: "Winter", sowMonths: [10,11,12], harvestSlots: 1, maturityDays: 90 },
+    "Other Rabi pulses": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 110 },
+    "Potato": { season: "Winter", sowMonths: [10,11], harvestSlots: 1, maturityDays: 80 },
+    "Rapeseed &Mustard": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 120 },
+    "Rice": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 120 },
+    "Sesamum": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 90 },
+    "Small millets": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 90 },
+    "Sugarcane": { season: "Whole Year", sowMonths: [1,2,3,4,5,6,7,8,9,10,11,12], harvestSlots: 3, maturityDays: 300 },
+    "Sweet potato": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 120 },
+    "Tapioca": { season: "Whole Year", sowMonths: [1,2,3,4,5,6,7,8,9,10,11,12], harvestSlots: 2, maturityDays: 240 },
+    "Tobacco": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 150 },
+    "Turmeric": { season: "Kharif", sowMonths: [5,6], harvestSlots: 1, maturityDays: 240 },
+    "Wheat": { season: "Rabi", sowMonths: [10,11,12], harvestSlots: 1, maturityDays: 110 },
+    "Bajra": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 90 },
+    "Black pepper": { season: "Whole Year", sowMonths: [1,2,3,4,5,6,7,8,9,10,11,12], harvestSlots: 2, maturityDays: 365 },
+    "Cardamom": { season: "Whole Year", sowMonths: [1,2,3,4,5,6,7,8,9,10,11,12], harvestSlots: 2, maturityDays: 300 },
+    "Coriander": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 90 },
+    "Garlic": { season: "Winter", sowMonths: [10,11], harvestSlots: 1, maturityDays: 120 },
+    "Ginger": { season: "Kharif", sowMonths: [5,6], harvestSlots: 1, maturityDays: 240 },
+    "Groundnut": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 110 },
+    "Horse-gram": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 100 },
+    "Jowar": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 100 },
+    "Ragi": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 110 },
+    "Cashewnut": { season: "Whole Year", sowMonths: [1,2,3,4,5,6,7,8,9,10,11,12], harvestSlots: 2, maturityDays: 365 },
+    "Banana": { season: "Whole Year", sowMonths: [1,2,3,4,5,6,7,8,9,10,11,12], harvestSlots: 4, maturityDays: 240 },
+    "Soyabean": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 100 },
+    "Barley": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 110 },
+    "Khesari": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 110 },
+    "Masoor": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 110 },
+    "Moong(Green Gram)": { season: "Summer", sowMonths: [3,4], harvestSlots: 1, maturityDays: 70 },
+    "Other Kharif pulses": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 100 },
+    "Safflower": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 130 },
+    "Sannhamp": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 90 },
+    "Sunflower": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 100 },
+    "Urad": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 90 },
+    "Peas & beans (Pulses)": { season: "Winter", sowMonths: [10,11], harvestSlots: 1, maturityDays: 90 },
+    "other oilseeds": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 100 },
+    "Other Cereals": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 100 },
+    "Cowpea(Lobia)": { season: "Summer", sowMonths: [3,4], harvestSlots: 1, maturityDays: 75 },
+    "Oilseeds total": { season: "Rabi", sowMonths: [10,11], harvestSlots: 1, maturityDays: 100 },
+    "Guar seed": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 90 },
+    "Other Summer Pulses": { season: "Summer", sowMonths: [3,4], harvestSlots: 1, maturityDays: 80 },
+    "Moth": { season: "Kharif", sowMonths: [6,7], harvestSlots: 1, maturityDays: 90 }
+};
+
+
+
+function setAllowedSowingMonths() {
+    const cropName = localStorage.getItem("cropName") || "";
+    const dateInput = document.getElementById("harvestDate");
+
+    if (!dateInput) return;
+
+    const config = cropConfig[cropName];
+
+    if (!config) return;
+
+    const allowedMonths = config.sowMonths;
+    const currentYear = new Date().getFullYear();
+
+    const minMonth = Math.min(...allowedMonths);
+    const maxMonth = Math.max(...allowedMonths);
+
+    dateInput.min = `${currentYear}-${String(minMonth).padStart(2, "0")}-01`;
+    dateInput.max = `${currentYear}-${String(maxMonth).padStart(2, "0")}-31`;
+
+    dateInput.addEventListener("input", function () {
+        const selectedMonth = new Date(this.value).getMonth() + 1;
+
+        if (!allowedMonths.includes(selectedMonth)) {
+            this.value = "";
+        }
+    });
+}
+
+
+</script>
+
+</body>
+</html>

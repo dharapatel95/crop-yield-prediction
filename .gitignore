@@ -1,0 +1,19 @@
+# Virtual environments
+.venv/
+venv/
+venv311/
+
+# Python cache
+__pycache__/
+
+# Database
+db.sqlite3
+
+# Documents
+*.docx
+*.pdf
+
+# Excel/CSV data files
+*.xls
+*.xlsx
+*.csv
