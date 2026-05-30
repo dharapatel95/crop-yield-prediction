@@ -118,11 +118,9 @@ def home(request):
             prediction = model.predict(input_df)
             prediction_value = float(prediction[0])
 
-            # ✅ generate realistic harvest pattern (low → high → low)
             x = np.linspace(0, 1, 5)
             harvest_pattern = np.exp(-((x - 0.5) ** 2) / 0.08)
 
-# normalize (so sum = 1)
             harvest_pattern = (harvest_pattern / harvest_pattern.sum()).tolist()
 
 
@@ -137,9 +135,9 @@ def home(request):
             print("Saving for user:", request.user)
             print("Current user:", request.user)
 
-            # ✅ SAVE TO DATABASE
+            #  SAVE TO DATABASE
             Prediction.objects.create(
-                user=request.user,   # ⭐ ADD THIS LINE
+                user=request.user,   
                 crop=data['crop'],
                 season=data['season'],
                 state=data['state'],
@@ -186,7 +184,7 @@ df = pd.read_csv(os.path.join(BASE_DIR, "india.csv"))
 
 
 
-#df = pd.read_csv("weather_data.csv")
+
 @login_required(login_url='login')
 def get_hybrid_weather(request):
     state = request.GET.get("state")
@@ -196,7 +194,7 @@ def get_hybrid_weather(request):
         return JsonResponse({"error": "Weather dataset not loaded"}, status=500)
     # ----------------------------
     # 1. Historical (all years except current)
-    # ----------------------------
+    
     hist = df[
         (df["state"] == state) &
         (df["season"] == season) &
