@@ -1,8 +1,3 @@
-# Create your views here.
-'''from django.http import HttpResponse
-
-def Welcome(request):
-    return HttpResponse('<h1>Jay ganesh.. Jay yogeshwer.. jay mataji</h1>')'''
 from django.shortcuts import render
 import pickle
 import numpy as np
